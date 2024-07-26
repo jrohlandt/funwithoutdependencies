@@ -1,4 +1,8 @@
 import http from 'node:http';
+import db from './db.js';
+db.migrate();
+db.seed();
+// console.log(db.findAllUsers());
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -26,6 +30,14 @@ const server = http.createServer((req, res) => {
       console.log('ABOUT');
       res.end(`<h1>About<h1>`);
       break;
+    case '/users':
+      let markup = '<h1>Users</h1><ul>';
+
+      db.findAllUsers().forEach(u => {
+        markup += `<li>${u.firstName} ${u.lastName} ${u.birthday}</li>`;
+      });
+      markup += '</ul>';
+      res.end(markup);
     default:
       console.log("NOT FOUND 404");
       res.statusCode = 404;
