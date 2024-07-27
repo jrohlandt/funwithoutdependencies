@@ -36,14 +36,31 @@ class DB {
     }
 
     createUser(user) {
-        const createUser = this.db.prepare('INSERT INTO users (firstName, lastName, birthday) VALUES (?, ?, ?)');
+        const createUser = this.db.prepare(`
+            INSERT INTO users 
+            (firstName, lastName, birthday) 
+            VALUES (?, ?, ?)
+        `);
         createUser.run(user.firstName, user.lastName, user.birthday);
         // TODO return user 
     }
 
+    updateUser(user) {
+        const query = this.db.prepare(`
+            UPDATE users 
+            SET firstName = ?, lastName = ?, birthday = ? 
+            WHERE id = ?
+        `);
+        query.run(user.firstName, user.lastName, user.birthday, user.id)
+        console.log('UPDATE USER: ', query.expandedSQL());
+        
+    }
+
     findUserById(id) {
         const query = this.db.prepare('SELECT * FROM users WHERE id = ?');
-        return query.get(id);
+        const result = query.get(id);
+        if (!result.id) return null;
+        return result;
     }
 
     findAllUsers() {

@@ -94,12 +94,27 @@ const server = http.createServer((req, res) => {
     }
 
     else if (urlPath.includes('/users/edit/')) {
+      const parts = urlPath.split('/');
+      const userId = parts[parts.length - 1];
+      const user = db.findUserById(userId);
+      if (!user) {
+        res.statusCode = 404;
+        res.end(`<h1>User not found</h1>`);
+        return;
+      } 
+
       if (req.method === 'GET') {
-        const parts = urlPath.split('/');
-        const userId = parts[parts.length - 1];
-        const user = db.findUserById(userId);
-        console.log(user);
-        res.end('user: ' + user.firstName);
+        res.end(userFormPage('edit', user));
+      }
+      else if (req.method === 'POST') {
+        getRequestData(req, (data) => {
+          const mUser = {...user};
+          mUser.firstName = data.firstName;
+          mUser.lastName = data.lastName;
+          mUser.birthday = 0;// new Date(user.birthday).getTime();
+          db.updateUser(mUser);
+          res.writeHead(307, {Location: '/users'}).end();
+        })
       }
     }
 
