@@ -41,6 +41,11 @@ class DB {
         // TODO return user 
     }
 
+    findUserById(id) {
+        const query = this.db.prepare('SELECT * FROM users WHERE id = ?');
+        return query.get(id);
+    }
+
     findAllUsers() {
         const query = this.db.prepare('SELECT * FROM users ORDER BY id');
         return query.all();
